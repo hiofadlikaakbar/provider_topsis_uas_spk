@@ -1,22 +1,22 @@
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Provider</h1>
+        <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Provider</h1>
         <p class="text-gray-400 text-sm mt-1">
           Kelola daftar provider sebagai alternatif pilihan
         </p>
       </div>
       <button
         @click="showModal = true"
-        class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
+        class="flex items-center gap-2 bg-gray-900 text-white px-3 lg:px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
       >
-        <span>+</span> Tambah Provider
+        <span>+</span>
+        <span class="hidden sm:inline">Tambah Provider</span>
+        <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 
-    <!-- Grid Provider -->
     <div v-if="loading" class="flex items-center justify-center py-20">
       <div
         class="w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"
@@ -34,16 +34,15 @@
       </p>
     </div>
 
-    <div v-else class="grid grid-cols-3 gap-5">
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="(item, i) in providerList"
         :key="item.id"
-        class="bg-white rounded-2xl border border-gray-100 p-6 space-y-4 hover:shadow-sm transition-all"
+        class="bg-white rounded-2xl border border-gray-100 p-5 space-y-4 hover:shadow-sm transition-all"
       >
-        <!-- Avatar -->
         <div class="flex items-start justify-between">
           <div
-            class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-600"
+            class="w-11 h-11 rounded-2xl bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-600"
           >
             {{ item.nama.charAt(0).toUpperCase() }}
           </div>
@@ -52,16 +51,12 @@
             >#{{ i + 1 }}</span
           >
         </div>
-
-        <!-- Info -->
         <div>
           <h3 class="font-semibold text-gray-900">{{ item.nama }}</h3>
           <p class="text-sm text-gray-400 mt-1 line-clamp-2">
             {{ item.deskripsi || "Tidak ada deskripsi" }}
           </p>
         </div>
-
-        <!-- Actions -->
         <div class="flex gap-2 pt-2 border-t border-gray-50">
           <button
             @click="openEdit(item)"
@@ -83,7 +78,7 @@
     <Transition name="fade">
       <div
         v-if="showModal"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
         @click.self="closeModal"
       >
         <div
@@ -157,7 +152,6 @@ const showModal = ref(false);
 const editMode = ref(false);
 const errorMsg = ref("");
 const providerList = ref<Provider[]>([]);
-
 const form = ref({ id: "", nama: "", deskripsi: "" });
 
 async function fetchProvider() {
@@ -187,22 +181,17 @@ async function simpanProvider() {
   errorMsg.value = "";
   if (!form.value.nama.trim())
     return (errorMsg.value = "Nama provider wajib diisi");
-
   saving.value = true;
 
   if (editMode.value) {
     await $supabase
       .from("provider")
-      .update({
-        nama: form.value.nama,
-        deskripsi: form.value.deskripsi,
-      })
+      .update({ nama: form.value.nama, deskripsi: form.value.deskripsi })
       .eq("id", form.value.id);
   } else {
-    await $supabase.from("provider").insert({
-      nama: form.value.nama,
-      deskripsi: form.value.deskripsi,
-    });
+    await $supabase
+      .from("provider")
+      .insert({ nama: form.value.nama, deskripsi: form.value.deskripsi });
   }
 
   saving.value = false;

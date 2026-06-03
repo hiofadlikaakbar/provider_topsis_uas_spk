@@ -1,8 +1,10 @@
 <template>
-  <div class="space-y-8">
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Hasil TOPSIS</h1>
+        <h1 class="text-xl lg:text-2xl font-bold text-gray-900">
+          Hasil TOPSIS
+        </h1>
         <p class="text-gray-400 text-sm mt-1">
           Ranking provider berdasarkan metode TOPSIS
         </p>
@@ -10,9 +12,9 @@
       <button
         @click="hitung"
         :disabled="loading"
-        class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all disabled:opacity-50"
+        class="flex items-center gap-2 bg-gray-900 text-white px-3 lg:px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all disabled:opacity-50"
       >
-        {{ loading ? "Menghitung..." : "🧮 Hitung TOPSIS" }}
+        {{ loading ? "Menghitung..." : "🧮 Hitung" }}
       </button>
     </div>
 
@@ -28,28 +30,25 @@
 
     <template v-else-if="hasil.length > 0">
       <!-- Top 3 -->
-      <div class="grid grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div
           v-for="(item, i) in hasil.slice(0, 3)"
           :key="item.provider_id"
-          class="rounded-2xl p-6 text-center space-y-3 border"
-          :class="[
+          class="rounded-2xl p-5 text-center space-y-3 border"
+          :class="
             i === 0
               ? 'bg-gray-900 text-white border-gray-900'
               : i === 1
                 ? 'bg-white border-gray-200'
-                : 'bg-white border-gray-100',
-          ]"
+                : 'bg-white border-gray-100'
+          "
         >
           <div class="text-3xl">
             {{ i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉" }}
           </div>
           <div>
             <p class="font-bold text-lg">{{ item.nama }}</p>
-            <p
-              class="text-sm mt-1"
-              :class="i === 0 ? 'text-gray-400' : 'text-gray-400'"
-            >
+            <p class="text-sm mt-1 text-gray-400">
               Skor: {{ item.skor.toFixed(4) }}
             </p>
           </div>
@@ -66,83 +65,135 @@
 
       <!-- Tabel Lengkap -->
       <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100">
+        <div class="px-4 lg:px-6 py-4 border-b border-gray-100">
           <p class="text-sm font-medium text-gray-700">Tabel Ranking Lengkap</p>
         </div>
-        <table class="w-full">
-          <thead class="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                Ranking
-              </th>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                Provider
-              </th>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                Skor Preferensi
-              </th>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                D+ (Ideal Positif)
-              </th>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                D- (Ideal Negatif)
-              </th>
-              <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
-                Bar
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-50">
-            <tr
-              v-for="(item, i) in hasil"
-              :key="item.provider_id"
-              class="hover:bg-gray-50 transition-colors"
-            >
-              <td class="px-6 py-4">
-                <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                  :class="
-                    i === 0
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  "
+
+        <!-- Desktop -->
+        <div class="hidden sm:block">
+          <table class="w-full">
+            <thead class="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
                 >
-                  {{ i + 1 }}
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                {{ item.nama }}
-              </td>
-              <td class="px-6 py-4 text-sm font-mono text-gray-700">
-                {{ item.skor.toFixed(6) }}
-              </td>
-              <td class="px-6 py-4 text-sm font-mono text-gray-500">
-                {{ item.dPlus.toFixed(6) }}
-              </td>
-              <td class="px-6 py-4 text-sm font-mono text-gray-500">
-                {{ item.dMinus.toFixed(6) }}
-              </td>
-              <td class="px-6 py-4">
-                <div class="w-32 bg-gray-100 rounded-full h-2">
+                  Ranking
+                </th>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
+                >
+                  Provider
+                </th>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
+                >
+                  Skor
+                </th>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
+                >
+                  D+
+                </th>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
+                >
+                  D-
+                </th>
+                <th
+                  class="text-left text-xs font-medium text-gray-400 px-6 py-4"
+                >
+                  Bar
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr
+                v-for="(item, i) in hasil"
+                :key="item.provider_id"
+                class="hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-6 py-4">
                   <div
-                    class="bg-gray-900 h-2 rounded-full transition-all"
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                    :class="
+                      i === 0
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    "
+                  >
+                    {{ i + 1 }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                  {{ item.nama }}
+                </td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-700">
+                  {{ item.skor.toFixed(6) }}
+                </td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-500">
+                  {{ item.dPlus.toFixed(6) }}
+                </td>
+                <td class="px-6 py-4 text-sm font-mono text-gray-500">
+                  {{ item.dMinus.toFixed(6) }}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="w-32 bg-gray-100 rounded-full h-2">
+                    <div
+                      class="bg-gray-900 h-2 rounded-full"
+                      :style="{ width: item.skor * 100 + '%' }"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="sm:hidden divide-y divide-gray-100">
+          <div
+            v-for="(item, i) in hasil"
+            :key="item.provider_id"
+            class="p-4 flex items-center gap-4"
+          >
+            <div
+              class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-xs font-bold"
+              :class="
+                i === 0 ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
+              "
+            >
+              {{ i + 1 }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-gray-900">{{ item.nama }}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                  <div
+                    class="bg-gray-900 h-1.5 rounded-full"
                     :style="{ width: item.skor * 100 + '%' }"
                   />
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <span class="text-xs font-mono text-gray-500 shrink-0">{{
+                  item.skor.toFixed(4)
+                }}</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">
+                D+: {{ item.dPlus.toFixed(4) }} · D-:
+                {{ item.dMinus.toFixed(4) }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Langkah TOPSIS -->
       <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100">
+        <div class="px-4 lg:px-6 py-4 border-b border-gray-100">
           <p class="text-sm font-medium text-gray-700">
             Langkah-langkah Perhitungan TOPSIS
           </p>
         </div>
-        <div class="p-6 space-y-6">
+        <div class="p-4 lg:p-6 space-y-6">
           <div class="space-y-3">
             <p class="text-sm font-semibold text-gray-900">
               1. Matriks Keputusan Ternormalisasi
@@ -151,13 +202,13 @@
               <table class="text-xs w-full">
                 <thead>
                   <tr class="bg-gray-50">
-                    <th class="text-left px-4 py-2 text-gray-400 font-medium">
+                    <th class="text-left px-3 py-2 text-gray-400 font-medium">
                       Provider
                     </th>
                     <th
                       v-for="k in steps.kriteria"
                       :key="k.id"
-                      class="px-4 py-2 text-gray-400 font-medium"
+                      class="px-3 py-2 text-gray-400 font-medium"
                     >
                       {{ k.nama }}
                     </th>
@@ -165,13 +216,13 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                   <tr v-for="row in steps.normalisasi" :key="row.nama">
-                    <td class="px-4 py-2 font-medium text-gray-700">
+                    <td class="px-3 py-2 font-medium text-gray-700">
                       {{ row.nama }}
                     </td>
                     <td
                       v-for="(v, vi) in row.values"
                       :key="vi"
-                      class="px-4 py-2 text-center font-mono text-gray-500"
+                      class="px-3 py-2 text-center font-mono text-gray-500"
                     >
                       {{ v.toFixed(4) }}
                     </td>
@@ -189,13 +240,13 @@
               <table class="text-xs w-full">
                 <thead>
                   <tr class="bg-gray-50">
-                    <th class="text-left px-4 py-2 text-gray-400 font-medium">
+                    <th class="text-left px-3 py-2 text-gray-400 font-medium">
                       Provider
                     </th>
                     <th
                       v-for="k in steps.kriteria"
                       :key="k.id"
-                      class="px-4 py-2 text-gray-400 font-medium"
+                      class="px-3 py-2 text-gray-400 font-medium"
                     >
                       {{ k.nama }}
                     </th>
@@ -203,13 +254,13 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                   <tr v-for="row in steps.terbobot" :key="row.nama">
-                    <td class="px-4 py-2 font-medium text-gray-700">
+                    <td class="px-3 py-2 font-medium text-gray-700">
                       {{ row.nama }}
                     </td>
                     <td
                       v-for="(v, vi) in row.values"
                       :key="vi"
-                      class="px-4 py-2 text-center font-mono text-gray-500"
+                      class="px-3 py-2 text-center font-mono text-gray-500"
                     >
                       {{ v.toFixed(4) }}
                     </td>
@@ -227,13 +278,13 @@
               <table class="text-xs w-full">
                 <thead>
                   <tr class="bg-gray-50">
-                    <th class="text-left px-4 py-2 text-gray-400 font-medium">
+                    <th class="text-left px-3 py-2 text-gray-400 font-medium">
                       Solusi
                     </th>
                     <th
                       v-for="k in steps.kriteria"
                       :key="k.id"
-                      class="px-4 py-2 text-gray-400 font-medium"
+                      class="px-3 py-2 text-gray-400 font-medium"
                     >
                       {{ k.nama }}
                     </th>
@@ -241,25 +292,21 @@
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                   <tr>
-                    <td class="px-4 py-2 font-medium text-green-700">
-                      A+ (Ideal Positif)
-                    </td>
+                    <td class="px-3 py-2 font-medium text-green-700">A+</td>
                     <td
                       v-for="(v, vi) in steps.idealPositif"
                       :key="vi"
-                      class="px-4 py-2 text-center font-mono text-green-600"
+                      class="px-3 py-2 text-center font-mono text-green-600"
                     >
                       {{ v.toFixed(4) }}
                     </td>
                   </tr>
                   <tr>
-                    <td class="px-4 py-2 font-medium text-red-700">
-                      A- (Ideal Negatif)
-                    </td>
+                    <td class="px-3 py-2 font-medium text-red-700">A-</td>
                     <td
                       v-for="(v, vi) in steps.idealNegatif"
                       :key="vi"
-                      class="px-4 py-2 text-center font-mono text-red-600"
+                      class="px-3 py-2 text-center font-mono text-red-600"
                     >
                       {{ v.toFixed(4) }}
                     </td>

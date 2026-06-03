@@ -1,22 +1,24 @@
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Kriteria & Bobot</h1>
+        <h1 class="text-xl lg:text-2xl font-bold text-gray-900">
+          Kriteria & Bobot
+        </h1>
         <p class="text-gray-400 text-sm mt-1">
           Kelola kriteria dan bobot penilaian provider
         </p>
       </div>
       <button
         @click="showModal = true"
-        class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
+        class="flex items-center gap-2 bg-gray-900 text-white px-3 lg:px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition-all"
       >
-        <span>+</span> Tambah Kriteria
+        <span>+</span>
+        <span class="hidden sm:inline">Tambah Kriteria</span>
+        <span class="sm:hidden">Tambah</span>
       </button>
     </div>
 
-    <!-- Info Bobot -->
     <div
       class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm"
       :class="
@@ -27,26 +29,18 @@
     >
       <span>{{ totalBobot === 1 ? "✅" : "⚠️" }}</span>
       <span>
-        Total bobot saat ini:
-        <strong>{{ (totalBobot * 100).toFixed(0) }}%</strong>
-        {{
-          totalBobot === 1
-            ? "— Bobot sudah valid!"
-            : "— Total bobot harus tepat 100%"
-        }}
+        Total bobot: <strong>{{ (totalBobot * 100).toFixed(0) }}%</strong>
+        {{ totalBobot === 1 ? "— Valid!" : "— Harus tepat 100%" }}
       </span>
     </div>
 
-    <!-- Tabel Kriteria -->
     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-      <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div
           class="w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"
         />
       </div>
 
-      <!-- Empty -->
       <div
         v-else-if="kriteriaList.length === 0"
         class="flex flex-col items-center justify-center py-20 text-center"
@@ -58,8 +52,8 @@
         </p>
       </div>
 
-      <!-- Table -->
-      <table v-else class="w-full">
+      <!-- Desktop Table -->
+      <table v-else class="hidden sm:table w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
           <tr>
             <th class="text-left text-xs font-medium text-gray-400 px-6 py-4">
@@ -93,7 +87,7 @@
               <div class="flex items-center gap-3">
                 <div class="flex-1 max-w-24 bg-gray-100 rounded-full h-1.5">
                   <div
-                    class="bg-gray-900 h-1.5 rounded-full transition-all"
+                    class="bg-gray-900 h-1.5 rounded-full"
                     :style="{ width: item.bobot * 100 + '%' }"
                   />
                 </div>
@@ -133,13 +127,70 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Mobile Cards -->
+      <div
+        v-if="kriteriaList.length > 0"
+        class="sm:hidden divide-y divide-gray-50"
+      >
+        <div
+          v-for="(item, i) in kriteriaList"
+          :key="item.id"
+          class="p-4 space-y-3"
+        >
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-900">{{ item.nama }}</p>
+              <span
+                class="text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block"
+                :class="
+                  item.jenis === 'benefit'
+                    ? 'bg-green-50 text-green-700'
+                    : 'bg-red-50 text-red-700'
+                "
+              >
+                {{ item.jenis === "benefit" ? "↑ Benefit" : "↓ Cost" }}
+              </span>
+            </div>
+            <span
+              class="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full"
+              >#{{ i + 1 }}</span
+            >
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+              <div
+                class="bg-gray-900 h-1.5 rounded-full"
+                :style="{ width: item.bobot * 100 + '%' }"
+              />
+            </div>
+            <span class="text-sm font-medium text-gray-700"
+              >{{ (item.bobot * 100).toFixed(0) }}%</span
+            >
+          </div>
+          <div class="flex gap-2">
+            <button
+              @click="openEdit(item)"
+              class="flex-1 text-xs text-gray-500 hover:text-gray-900 py-2 rounded-lg hover:bg-gray-100 transition-all border border-gray-100"
+            >
+              Edit
+            </button>
+            <button
+              @click="hapusKriteria(item.id)"
+              class="flex-1 text-xs text-red-400 hover:text-red-600 py-2 rounded-lg hover:bg-red-50 transition-all border border-red-50"
+            >
+              Hapus
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Modal Tambah / Edit -->
+    <!-- Modal -->
     <Transition name="fade">
       <div
         v-if="showModal"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-4"
         @click.self="closeModal"
       >
         <div
@@ -149,7 +200,6 @@
             {{ editMode ? "Edit Kriteria" : "Tambah Kriteria" }}
           </h2>
 
-          <!-- Nama -->
           <div class="space-y-1.5">
             <label class="text-xs font-medium text-gray-600"
               >Nama Kriteria</label
@@ -162,11 +212,10 @@
             />
           </div>
 
-          <!-- Bobot -->
           <div class="space-y-1.5">
-            <label class="text-xs font-medium text-gray-600">
-              Bobot <span class="text-gray-400">(0 - 100%)</span>
-            </label>
+            <label class="text-xs font-medium text-gray-600"
+              >Bobot <span class="text-gray-400">(0 - 100%)</span></label
+            >
             <div class="relative">
               <input
                 v-model="form.bobot"
@@ -186,7 +235,6 @@
             </p>
           </div>
 
-          <!-- Jenis -->
           <div class="space-y-1.5">
             <label class="text-xs font-medium text-gray-600"
               >Jenis Kriteria</label
@@ -203,7 +251,7 @@
               >
                 <span>↑</span> Benefit
                 <span class="text-xs font-normal"
-                  >Nilai lebih tinggi = lebih baik</span
+                  >Lebih tinggi = lebih baik</span
                 >
               </button>
               <button
@@ -217,16 +265,14 @@
               >
                 <span>↓</span> Cost
                 <span class="text-xs font-normal"
-                  >Nilai lebih rendah = lebih baik</span
+                  >Lebih rendah = lebih baik</span
                 >
               </button>
             </div>
           </div>
 
-          <!-- Error -->
           <p v-if="errorMsg" class="text-xs text-red-500">{{ errorMsg }}</p>
 
-          <!-- Actions -->
           <div class="flex gap-3 pt-2">
             <button
               @click="closeModal"
@@ -318,7 +364,6 @@ function closeModal() {
 async function simpanKriteria() {
   errorMsg.value = "";
   const bobotNum = Number(form.value.bobot);
-
   if (!form.value.nama.trim())
     return (errorMsg.value = "Nama kriteria wajib diisi");
   if (!bobotNum || bobotNum <= 0)
@@ -339,11 +384,13 @@ async function simpanKriteria() {
       })
       .eq("id", form.value.id);
   } else {
-    await $supabase.from("kriteria").insert({
-      nama: form.value.nama,
-      bobot: bobotDecimal,
-      jenis: form.value.jenis,
-    });
+    await $supabase
+      .from("kriteria")
+      .insert({
+        nama: form.value.nama,
+        bobot: bobotDecimal,
+        jenis: form.value.jenis,
+      });
   }
 
   saving.value = false;
